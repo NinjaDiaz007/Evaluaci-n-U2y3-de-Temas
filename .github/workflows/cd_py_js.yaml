@@ -1,4 +1,4 @@
-name: CI/CD for Python and JavaScript
+name: Python CI/CD
 
 on:
   push:
@@ -9,60 +9,40 @@ on:
       - main
 
 jobs:
-  # Job para entorno Python
-  python:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      # Configurar el repositorio
-      - name: Checkout Code
+      # 1. Descargar el código fuente del repositorio
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Configurar Python
+      # 2. Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.9' # Cambia la versión según lo que necesites
 
-      # Instalar dependencias
-      - name: Install Dependencies
+      # 3. Instalar caché para las dependencias
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 4. Instalar dependencias
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Ejecutar pruebas
-      - name: Run Tests (Python)
+      # 5. Ejecutar pruebas
+      - name: Run tests
         run: pytest
-
-  # Job para entorno JavaScript
-  javascript:
-    runs-on: ubuntu-latest
-    steps:
-      # Configurar el repositorio
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Configurar Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      # Instalar dependencias
-      - name: Install Dependencies
-        run: npm install
-
-      # Ejecutar pruebas
-      - name: Run Tests (JavaScript)
-        run: npm test
-
-      # Linter para estilos de código (opcional)
+      # 6. Ejecutar Linter
       - name: Run Linter
-        run: npm run lint
-
-  # Job de despliegue (si ambos trabajos de pruebas pasan)
-  deploy:
-    needs: [python, javascript]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy Application
-        run: echo "Deploying application..." # Cambia esto por comandos reales de despliegue
+        run: |
+          pip install flake8
+          flake8 .
