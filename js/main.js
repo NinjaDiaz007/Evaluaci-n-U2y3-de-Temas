@@ -5,6 +5,9 @@ let finality = document.getElementById("finality");
 let card = document.getElementById("card");
 let reboot = document.getElementById("reboot");
 
+let imgH = document.getElementById("img-h");
+let btn_hamburgesa = document.getElementById("lbl-hamburgesa");
+
 let slider = document.querySelector(".slide");
 let sliderIndividual = document.querySelectorAll(".slider");
 let contador = 1;
@@ -92,7 +95,18 @@ reboot.addEventListener('click', ()=>{
     location.reload();
 });
 
+btn_hamburgesa.addEventListener('click', ()=>{
+    if(btn_hamburgesa.checked === false){
+        imgH.src = "./img/close.svg";
+    }
+});
+
 // Funciones
+function Init(){
+    PreguntasPantalla();
+}
+Init();
+
 function PreguntasPantalla(){
     let i;
     let texto = document.querySelectorAll(".txt");
@@ -102,7 +116,6 @@ function PreguntasPantalla(){
         //console.log(`Pregunta: ${preguntas[i]}`);
     }
 }
-PreguntasPantalla();
 
 function Cerrar_Modal(){
     card.style.left = "-50%";
