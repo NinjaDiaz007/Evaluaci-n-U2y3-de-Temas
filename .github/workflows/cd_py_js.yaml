@@ -1,0 +1,68 @@
+name: CI/CD for Python and JavaScript
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Job para entorno Python
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      # Configurar el repositorio
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Configurar Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Instalar dependencias
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Ejecutar pruebas
+      - name: Run Tests (Python)
+        run: pytest
+
+  # Job para entorno JavaScript
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      # Configurar el repositorio
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Configurar Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Instalar dependencias
+      - name: Install Dependencies
+        run: npm install
+
+      # Ejecutar pruebas
+      - name: Run Tests (JavaScript)
+        run: npm test
+
+      # Linter para estilos de código (opcional)
+      - name: Run Linter
+        run: npm run lint
+
+  # Job de despliegue (si ambos trabajos de pruebas pasan)
+  deploy:
+    needs: [python, javascript]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Application
+        run: echo "Deploying application..." # Cambia esto por comandos reales de despliegue
